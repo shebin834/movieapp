@@ -57,7 +57,6 @@ class AsyncDatabaseManager:
         return await self.collection.count_documents({})
 
     async def delete_all_movies(self):
-        # 3 database cluster-ileyum movies motham clear cheyyunnu
         for uri in self.uris:
             try:
                 temp_client = motor.motor_asyncio.AsyncIOMotorClient(uri)
@@ -66,7 +65,6 @@ class AsyncDatabaseManager:
             except Exception as e:
                 print(f"Error clearing DB: {e}")
         
-        # Wiping kazhinju adhyathe cluster-ilekk thanne reset cheyyunnu
         self.current_idx = 0
         self.client = motor.motor_asyncio.AsyncIOMotorClient(self.uris[self.current_idx])
         self.db = self.client['VibePlusDB']
@@ -88,7 +86,6 @@ async def start_command(client, message):
     )
     await message.reply_text(welcome_text)
 
-# --- Database Mothambhamaayi Clear Cheyyaan Ulla Command ---
 @bot.on_message(filters.command("deleteall") & filters.private)
 async def delete_all_command(client, message):
     await message.reply_text("Database empty aakkan thudangunnu... Dayavayi kurachu samayam wait cheyyuka.")
@@ -144,6 +141,11 @@ async def auto_indexing(client, message):
 # ==========================================
 # Bhagam 4: Web Server (Streaming Logic)
 # ==========================================
+
+# --- Puthiya Ping Route (UptimeRobot-nu vendi) ---
+async def ping(request):
+    return web.Response(text="Bot is Running! 🟢 UptimeRobot is happy! Server is awake.")
+
 async def handle_stream(request):
     file_id = request.match_info.get('file_id')
     movie_data = await db_manager.collection.find_one({"file_id": file_id})
@@ -204,6 +206,9 @@ async def handle_stream(request):
 
 async def start_web_server():
     app = web.Application()
+    
+    # നമ്മൾ ഉണ്ടാക്കിയ പിംഗ് റൂട്ട് ഇവിടെ ചേർത്തു!
+    app.router.add_get('/', ping) 
     app.router.add_get('/watch/{file_id}', handle_stream)
     
     runner = web.AppRunner(app)
